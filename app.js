@@ -82,6 +82,23 @@ app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
 
+/////4.==============HANDLING PATCH REQUEST:file-based API;
+app.patch('api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.lengths) {
+    //*1 -converting to a number;
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  res.status(200).json({
+    status: success,
+    data: {
+      tour: '<Updated tour here..>',
+    },
+  });
+});
+
 /////3.===============Responding to url parameters and getting only one tour, unique identifier:
 
 // ? - in the url,like this : '/api/v1/tours/:id/:x?' means that it's an optional parameter;
@@ -107,5 +124,20 @@ app.get('/api/v1/tours/:id', (req, res) => {
     data: {
       tour, //tours: tour,
     },
+  });
+});
+
+/////4.===============DELETE request:
+app.delete('api/v1/tours/:id', (req, res) => {
+  if (req.params.id * 1 > tours.lengths) {
+    //*1 -converting to a number;
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  res.status(204).json({
+    status: success,
+    data: null,
   });
 });
