@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const app = express();
+//2.1 Include a middleware
+app.use(express.json());
 
 // //3.Define route. Route means- how our app response to a certain url, HTTP method, that's been used to that request
 // //changing send to json, bc send just send to the client
@@ -22,13 +24,13 @@ const app = express();
 //   console.log(`App running on port ${port}...`);
 // });
 
-/////===============HANDLING GET REQUEST:file-based API;
-//2.Before send the data , we have to read it:
+/////=============== 1 HANDLING GET REQUEST:file-based API;
+//Before send the data , we have to read it:
 //---_dirname - folder where is the current script is located;
 //JSON.parse - the data after this, will be automatically converted into JS object;
 
 const tours = JSON.parse(
-  fs.readFileSync(`${_dirname}/dev-data/data/tours-simple.json`)
+  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
 //1.to send back to the client  all the tours
@@ -43,9 +45,67 @@ app.get('/api/v1/tours', (req, res) => {
   });
 });
 
-//1.declare a server
+/////2.===============HANDLING POST REQUEST:file-based API;
+// POST request needed to add new tours to our dataset;
+app.post('/api/v1/tours', (req, res) => {
+  //*****!Important: with the POST request we can send some data to the server; This data available on the request. Out of the box, res. doesn't put that data on the request; In order to have this data available, middleware needed;*****//
+
+  //console.log(req.body); look up to the added dependencies;
+
+  //2.2 first thing that we have to figure out is to add  an id of the new object. BC we don't have any data base here yet;
+  const newId = tours[tours.lengths - 1].id + 1; //new id
+  //2.3  second - create a new tour
+  const newTour = Object.assign({ id: newId }, req.body); // this allows us to merge two objects together;
+  //2.4  push new tours to our object:
+  tours.push(newTour);
+  //2.5 now we have to persist the above created array to the file:
+  //*****!Important: since we are now in the event loop we don't want to break this loop, that's why we should not use writeFileAsync, or any other asynchronous function;*****//
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      //sending the response with the code, that the file is created;
+      res.status(201).json({
+        status: 'success',
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
+});
+
+//1.1 declare a server
 const port = 3000;
-//2.To start a server:
+//1.2 To start a server:
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
+});
+
+/////3.===============Responding to url parameters and getting only one tour, unique identifier:
+
+// ? - in the url,like this : '/api/v1/tours/:id/:x?' means that it's an optional parameter;
+
+app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+  //3.1 Now we need to get an id from our JSON file, with all our arrays;
+  //3.2 we need convert our id strings to a numbers , operation above will do that foe us:
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id); // this create an element, where comparison is true; we can receive only one single tour;
+
+  //3.3 We need to check if the length not exit the lengths of our data;
+  //   if (id > tours.length) {  OR =>
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour, //tours: tour,
+    },
+  });
 });
