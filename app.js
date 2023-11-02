@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const app = express();
 
 //1)MIDDLEWARES;
+//use third party middleware - morgan:
+app.use(morgan('dev'));
 app.use(express.json());
 //using a middleware, next third conventional argument needed:
 //Important: the middleware order in Express meter, bc getAllTours will ends request response cycle!
@@ -109,6 +111,7 @@ app
   .patch(updateTour)
   .delete(deleteTour);
 
+// 3) START SERVER
 const port = 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
