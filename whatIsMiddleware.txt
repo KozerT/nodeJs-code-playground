@@ -4,5 +4,5 @@ To start Request response cycle:
 -all the middleware that we use together calls a middleware stack;
 -!Order of code meters a lot in express; 
 
-
-
+middleware example:
+app.use(express.json());
