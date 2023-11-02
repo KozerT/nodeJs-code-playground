@@ -91,14 +91,14 @@ const deleteTour = (req, res) => {
 
 /// 6. =======The above could be modified, so it has better functionality:
 //for getting and posting:
-app.route('/api/v1/tours').get(getAllTours()).post(createTour());
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
 //for one id:
 app
   .route('/api/v1/tours/:id')
-  .get(getOneTour())
-  .patch(updateTour())
-  .delete(deleteTour());
+  .get(getOneTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => {
