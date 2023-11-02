@@ -29,11 +29,8 @@ const tours = JSON.parse(
 //*****to connect our routes with application we would use them as a middleware
 app.use('/api/v1/tours', tourRouter); // this will be our middleware;
 app.use('/api/v1/users', tourRouter); // this will be our middleware;
-// 3) START SERVER
-const port = 3000;
-app.listen(port, () => {
-  console.log(`App running on port ${port}...`);
-});
+
+module.exports = app;
 
 ////////**************************************************************** */
 
