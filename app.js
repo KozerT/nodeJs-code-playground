@@ -137,24 +137,25 @@ const deleteUser = () => {
   });
 };
 
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// ***creating one tour route for better code organization in the future:
+const tourRouter = express.Router();
+// 3) ROUTES !
 
-// 3) ROUTES
-app
-  .route('/api/v1/tours/:id')
-  .get(getOneTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+// *****create a user route, following the same principle as an above, this process calls mounting the router:
+const userRoute = express.Router();
+
+tourRouter.route('/').get(getAllTours).post(createTour);
+
+tourRouter.route('/:id').get(getOneTour).patch(updateTour).delete(deleteTour);
 
 //***implementing users resources:
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
+userRoute.route('/').get(getAllUsers).post(createUser);
 
-app
-  .route('/api/v1/tours/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+userRoute.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
+//*****to connect our routes with application we would use them as a middleware
+app.use('/api/v1/tours', tourRouter); // this will be our middleware;
+app.use('/api/v1/users', tourRouter); // this will be our middleware;
 // 3) START SERVER
 const port = 3000;
 app.listen(port, () => {
