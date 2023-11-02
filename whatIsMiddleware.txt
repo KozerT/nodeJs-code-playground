@@ -1,0 +1,8 @@
+To start Request response cycle: 
+-middleware needed (its usually about the  request);
+-in express everything is a middleware (think about the route as a middleware function)
+-all the middleware that we use together calls a middleware stack;
+-!Order of code meters a lot in express; 
+
+
+

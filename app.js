@@ -1,15 +1,35 @@
 const express = require('express');
 const fs = require('fs');
-const app = express();
-//2.1 Include a middleware
-app.use(express.json());
+const morgan = require('morgan');
 
-/// 5. ========Organizing the code, routs and combining the functions: routes should be together and a handle functions separately:
+const app = express();
+
+//1)MIDDLEWARES;
+app.use(express.json());
+//using a middleware, next third conventional argument needed:
+//Important: the middleware order in Express meter, bc getAllTours will ends request response cycle!
+app.use((req, res, next) => {
+  console.log(`Hello from the middleware 🌞`);
+  next(); // we need to call next function, otherwise, response/request cycle would be really sucked at this point
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString(); //info when exact request happened;
+  next();
+});
+
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
+);
+
+//2) ROUTE HANDLERS
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
-    results: tours.lengths,
+    requested: req.requestTime,
+    results: tours.length,
     data: {
       tours: tours,
     },
@@ -29,13 +49,13 @@ const getOneTour = (req, res) => {
   res.status(200).json({
     status: 'success',
     data: {
-      tour, //tours: tour,
+      tour,
     },
   });
 };
 
 const createTour = (req, res) => {
-  const newId = tours[tours.lengths - 1].id + 1;
+  const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
   tours.push(newTour);
   fs.writeFile(
@@ -53,15 +73,14 @@ const createTour = (req, res) => {
 };
 
 const updateTour = (req, res) => {
-  if (req.params.id * 1 > tours.lengths) {
-    //*1 -converting to a number;
+  if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
       message: 'Invalid ID',
     });
   }
   res.status(200).json({
-    status: success,
+    status: 'success',
     data: {
       tour: '<Updated tour here..>',
     },
@@ -69,31 +88,21 @@ const updateTour = (req, res) => {
 };
 
 const deleteTour = (req, res) => {
-  if (req.params.id * 1 > tours.lengths) {
-    //*1 -converting to a number;
+  if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       status: 'fail',
       message: 'Invalid ID',
     });
   }
   res.status(204).json({
-    status: success,
+    status: 'success',
     data: null,
   });
 };
 
-// app.get('/api/v1/tours', getAllTours());
-// app.post('/api/v1/tours', createTour());
-
-// app.get('/api/v1/tours/:id', getOneTour());
-// app.patch('api/v1/tours/:id', updateTour());
-// app.delete('api/v1/tours/:id', deleteTour());
-
-/// 6. =======The above could be modified, so it has better functionality:
-//for getting and posting:
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
-//for one id:
+// 3) ROUTES
 app
   .route('/api/v1/tours/:id')
   .get(getOneTour)
