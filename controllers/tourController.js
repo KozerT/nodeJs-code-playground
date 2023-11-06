@@ -18,6 +18,18 @@ exports.checkID = (req, res, next, val) => {
   next();
 };
 
+//check body middleware function, body contains name and price property
+// If not - 404 status should be sent;
+exports.checkBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Missing name or price',
+    });
+  }
+  next();
+};
+
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
 
