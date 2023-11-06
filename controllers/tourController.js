@@ -7,6 +7,7 @@ const tours = JSON.parse(
 //creating another middleware for the validation:
 exports.checkID = (req, res, next, val) => {
   console.log(`Tour id: ${val}`);
+
   if (req.params.id * 1 > tours.length) {
     return res.status(404).json({
       //return needed, to finish the operation
@@ -19,6 +20,7 @@ exports.checkID = (req, res, next, val) => {
 
 exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
+
   res.status(200).json({
     status: 'success',
     requested: req.requestTime,
@@ -45,7 +47,9 @@ exports.getOneTour = (req, res) => {
 exports.createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
+
   tours.push(newTour);
+
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
