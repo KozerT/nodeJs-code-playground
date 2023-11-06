@@ -6,8 +6,12 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 //1)MIDDLEWARES;
-//use third party middleware - morgan:
-app.use(morgan('dev'));
+// the below line of code will run the middleware only when we are in dev stage
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  //use third party middleware - morgan:
+  app.use(morgan('dev'));
+}
 app.use(express.json());
 //<-using a middleware, next third conventional argument needed:
 
