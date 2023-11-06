@@ -9,7 +9,10 @@ const app = express();
 //use third party middleware - morgan:
 app.use(morgan('dev'));
 app.use(express.json());
-//using a middleware, next third conventional argument needed:
+//<-using a middleware, next third conventional argument needed:
+
+/*Middleware for reading static files*/
+app.use(express.static(`${__dirname}/public`));
 
 //Important: the middleware order in Express meter, bc getAllTours will ends request response cycle!
 app.use((req, res, next) => {
